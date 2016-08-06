@@ -1,0 +1,16 @@
+### remove images by name
+for i in `sudo docker images|grep none |awk '{print $3}'`;do sudo docker rmi -f $i;done
+
+
+docker rm `docker ps -a | grep Exited | awk '{print $1 }'`
+docker rmi `docker images -aq`
+
+
+## stats collecting
+dstat -c -C 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,total -m -d -n -T --output output.csv
+
+## stats in bg with no output
+(dstat -c -C 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,total -m -d -n -T --noupdate --output output.csv > /dev/null) &
+
+## check for running containers
+if [[ `docker ps -a | grep Up  | awk '{print $1 }'` != "" ]]; then echo "found"; else echo "not found"; fi

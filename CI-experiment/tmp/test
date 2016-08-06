@@ -1,0 +1,14 @@
+"Dstat 0.7.2 CSV output"
+"Author:","Dag Wieers <dag@wieers.com>",,,,"URL:","http://dag.wieers.com/home-made/dstat/"
+"Host:","mpdsum",,,,"User:","panda"
+"Cmdline:","dstat -C 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,total -T --output test",,,,"Date:","04 Jun 2016 09:56:56 UTC"
+
+"epoch"
+"epoch"
+1465034216.141
+1465034217.141
+1465034218.141
+1465034219.141
+1465034220.141
+1465034221.141
+1465034222.141

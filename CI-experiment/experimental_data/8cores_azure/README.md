@@ -1,0 +1,1 @@
+cpu 1-8 usage data; total cpu usage; ram memory usage

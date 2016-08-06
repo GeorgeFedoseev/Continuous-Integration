@@ -1,0 +1,7 @@
+# Created by cloud-init v. 0.7.5 on Wed, 04 May 2016 23:23:13 +0000
+
+# User rules for panda
+panda ALL=(ALL) NOPASSWD:ALL
+
+# for gitlab-runner
+gitlab-runner ALL=(ALL) NOPASSWD:ALL

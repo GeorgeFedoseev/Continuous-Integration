@@ -1,0 +1,24 @@
+concurrent = 1
+
+
+[[runners]]
+  name = "Main Runner"
+  url = "http://13.79.155.231/ci"
+  token = "6770d4def2a0a471a8035761e2ef59"
+  executor = "shell"
+  output_limit = 4096000
+  timeout = 5400
+  [runners.ssh]
+  [runners.docker]
+    tls_verify = false
+    image = ""
+    privileged = false
+    disable_cache = false
+  [runners.parallels]
+    base_name = ""
+    disable_snapshots = false
+  [runners.virtualbox]
+    base_name = ""
+    disable_snapshots = false
+  [runners.cache]
+    Insecure = false

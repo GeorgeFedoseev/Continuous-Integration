@@ -1,0 +1,240 @@
+<html>
+  <head>
+    <script src="lib/js/jquery-1.12.3.min.js"></script>
+    <script src="lib/js/papaparse.min.js" ></script>
+    <script src="lib/js/d3.min.js" ></script>
+    <script src="lib/js/metricsgraphics.js" ></script>
+
+    <link rel="stylesheet" href="lib/css/metricsgraphics.css" ></link>
+    <link rel="stylesheet" href="lib/css/metricsgraphics-demo.css" ></link>
+    <link rel="stylesheet" href="lib/css/bootstrap.min.css" ></link>
+    <link href="https://netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.css" rel="stylesheet" type="text/css">
+    <style>
+      html{
+        font-size: 15px;
+      }
+
+      .gr_container{
+        margin-top: 50px;
+        margin-bottom: 50px;
+        margin-left: 0px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="gr_container">
+
+    </div>
+  </body>
+
+
+
+  <script>
+    var first_max = 330;
+    $(document).ready(function(){
+      drawColumn("no_tasks", "Нет задач", "Загрузка ядра(1-8) CPU",[], first_max)
+      drawColumn("one_commit_j1", "1 задача; 1 поток = 271 сек.", "Загрузка ядра(1-8) CPU",[
+        {
+          time: 33,
+          label: "начало построения"
+        },
+        {
+          time: 255,
+          label: "тест"
+        }
+      ], first_max)
+      drawColumn("one_commit_j2", "1 задача; 2 потока = 171 сек.", "Загрузка ядра(1-8) CPU",[
+        {
+          time: 31,
+          label: "начало построения"
+        },
+        {
+          time: 156,
+          label: "тест"
+        }
+      ], first_max)
+      drawColumn("one_commit_j4", "1 задача; 4 потока = 121 сек.", "Загрузка ядра(1-8) CPU", [
+        {
+          time: 30,
+          label: "начало построения"
+        },
+        {
+          time: 107,
+          label: "тест"
+        }
+      ], first_max)
+      drawColumn("one_commit_j8", "1 задача; 8 потоков = 102 сек.", "Загрузка ядра(1-8) CPU",[
+        {
+          time: 34,
+          label: "начало построения"
+        },
+        {
+          time: 88,
+          label: "тест"
+        }
+      ], first_max)
+
+      drawColumn("2_simult_j4", "2 задачи; 4 потока на каждую = 175 сек.", "Загрузка ядра(1-8) CPU",[], first_max)
+      drawColumn("2_simult_j8", "2 задачи; 8 потоков на каждую = 174 сек.", "Загрузка ядра(1-8) CPU",[], first_max)
+      drawColumn("2_simult_shift10_j8", "2 задачи; 8 потоков на каждую; сдвиг 10 сек. = 164 сек.", "Загрузка ядра(1-8) CPU",[], first_max)
+      drawColumn("2_simult_shift20_j8", "2 задачи; 8 потоков на каждую; сдвиг 20 сек. = 160 сек.", "Загрузка ядра(1-8) CPU",[], first_max)
+      drawColumn("2_simult_shift30_j8", "2 задачи; 8 потоков на каждую; сдвиг 30 сек. = 165 сек.", "Загрузка ядра(1-8) CPU",[], first_max)
+      drawColumn("2_simult_shift50_j8", "2 задачи; 8 потоков на каждую; сдвиг 50 сек. = 187 сек.", "Загрузка ядра(1-8) CPU",[], first_max)
+
+      drawColumn("4_simult_j4", "4 задачи; 4 потока на каждую = 332 сек.", "Загрузка ядра(1-8) CPU")
+      drawColumn("4_simult_j8", "4 задачи; 8 потоков на каждую = 329 сек.", "Загрузка ядра(1-8) CPU")
+      drawColumn("4_simult_shift10_j8", "4 задачи; 8 потоков на каждую; сдвиг 10 сек. = 291 сек.", "Загрузка ядра(1-8) CPU")
+      drawColumn("4_simult_shift20_j8", "4 задачи; 8 потоков на каждую; сдвиг 20 сек. = 310 сек.", "Загрузка ядра(1-8) CPU")
+      drawColumn("4_simult_shift30_j8", "4 задачи; 8 потоков на каждую; сдвиг 30 сек.  = 292 сек.", "Загрузка ядра(1-8) CPU")
+
+      drawColumn("8_simult_j1", "8 задач; 1 поток на каждую = 642 сек.", "Загрузка ядра(1-8) CPU")
+      drawColumn("8_simult_j8", "8 задач; 8 потоков на каждую = 601 сек.", "Загрузка ядра(1-8) CPU")
+
+
+
+      drawColumn("from_scratch_j8", "1 задача; сборка с нуля; 8 потоков = 38 мин. 58 сек.", "Загрузка ядра(1-8) CPU", [], 2600)      
+      //drawColumn("data/one_commit.csv", "Использование памяти", "память (ГБ)", false, 0.000000001)
+    });
+
+
+
+
+
+    function drawColumn(filename, title, y_title, markers, max_time){
+      var id = "id_"+filename;
+      var path = "data/"+filename+".csv";
+
+      $(".gr_container").append($("<div>").attr("id", id));
+
+      if(diff_cores == undefined)
+        var diff_cores = true
+
+      if(percentage == undefined)
+        var percentage = true;
+
+      if(y_mltpl == undefined)
+        var y_mltpl = 1;
+
+      $.get(path, function(data){
+        Papa.parse(data, {
+          dynamicTyping: true,
+          complete: function(res){
+            //  console.log(res)
+              _drawColumn(res, id, title, y_title, percentage, y_mltpl, diff_cores, markers, max_time)
+          }
+        });
+      });
+
+      function _drawColumn(raw_data, id, title, y_title, percentage, y_mltpl, diff_cores, markers, max_time){
+        var data = [];
+
+        if(max_time == undefined)
+          max_time = 700;
+
+        if(!diff_cores){
+          data[0] = [];
+          var i = 0;
+          for(var k in raw_data.data){
+            if(parseInt(k) > 6){
+              var val = raw_data.data[k][column];
+              if(val != undefined){
+                data[0][i] = {
+                  time: i,
+                  value: val*y_mltpl
+                }
+
+                i++;
+              }
+            }
+          }
+        }else{
+          var core = 0;
+          while(core < 8){
+            var core_data = [];
+
+            var i = 0;
+            for(var k in raw_data.data){
+              if(parseInt(k) > 6){
+                var val = raw_data.data[k][core*6];
+                if(val != undefined){
+                  core_data[i] = {
+                    time: i,
+                    value: val*y_mltpl,
+                    style: ""
+                  }
+
+                  i++;
+                }
+              }
+            }
+
+            data.push(core_data);
+            //console.log("push core "+core)
+            core++;
+          }
+
+
+          //console.log(data)
+
+          if(data.length > 1){
+            //console.log(data.length)
+            // draw average
+            var average = [];
+            for(var j in data[1]){
+              var sum = 0;
+              for(var m in data){
+                if(data[m][j] != undefined)
+                  sum += data[m][j].value;
+              }
+              //console.log(sum/data.length)
+              average.push({
+                time: parseInt(j),
+                value: sum/data.length,
+                style: "bold"
+              });
+            }
+
+            data.push(average);
+            //console.log(data)
+          }
+
+        }
+
+        data.reverse();
+
+
+        if(markers == undefined)
+          markers = [];
+
+
+
+        MG.data_graphic({
+          title: title,
+          //description: "Here is an example that shows percentages.",
+          data: data,
+          markers: markers,
+          width: 700,
+          height: 200,
+          left: 120,
+          area: true,
+          y_extended_ticks: true,
+          x_accessor: 'time',
+          y_accessor: 'value',
+          x_label: "время (секунды)",
+          y_label: y_title,
+          yax_format: percentage==true?function(v){return v+"%"}:null,
+          target: '#'+id,
+          max_x: max_time,
+          missing_is_hidden: true,
+          max_y: 100,
+          legend: data.length>1?['среднее']:null
+          //y_rug: true
+        });
+
+        }
+      }
+
+
+
+  </script>
+</html>

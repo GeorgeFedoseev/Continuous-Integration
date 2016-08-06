@@ -1,0 +1,168 @@
+<html>
+  <head>
+    <script src="lib/js/jquery-1.12.3.min.js"></script>
+    <script src="lib/js/papaparse.min.js" ></script>
+    <script src="lib/js/d3.min.js" ></script>
+    <script src="lib/js/metricsgraphics.min.js" ></script>
+
+    <link rel="stylesheet" href="lib/css/metricsgraphics.css" ></link>
+    <link rel="stylesheet" href="lib/css/metricsgraphics-demo.css" ></link>
+    <link rel="stylesheet" href="lib/css/bootstrap.min.css" ></link>
+    <link href="https://netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.css" rel="stylesheet" type="text/css">
+    <style>
+      html{
+        font-size: 15px;
+      }
+
+      .gr_container{
+        margin-top: 50px;
+        margin-bottom: 50px;
+        margin-left: 0px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="gr_container">
+
+    </div>
+  </body>
+
+
+
+  <script>
+    
+    $(document).ready(function(){
+      
+      drawColumn("1job_20cores_from_scratch", 20*6+0)
+
+    });
+
+
+    function drawColumn(filename, column){
+      var id = "id_"+filename;
+      var path = "data/"+filename+".csv";
+
+      $(".gr_container").append($("<div>").attr("id", id));
+
+      if(percentage == undefined)
+        var percentage = true;
+
+      if(y_mltpl == undefined)
+        var y_mltpl = 1;
+
+      $.get(path, function(data){
+        Papa.parse(data, {
+          dynamicTyping: true,
+          complete: function(res){
+            //  console.log(res)
+              _draw(res, id)
+          }
+        });
+      });
+
+        
+        function _draw(raw_data, id){
+            var data = [];
+
+            
+            var max_time = 2700;
+
+              data[0] = [];
+              var i = 0;
+              for(var k in raw_data.data){
+                if(parseInt(k) > 6){
+                  var val = raw_data.data[k][column];                 
+                  if(val != undefined && val < 32000000){
+                    data[0][i] = {
+                      time: i,
+                      value: val*y_mltpl
+                    }
+                    
+                   /* var m_avrg_steps = 8;
+                    if(i >= m_avrg_steps){
+                        var sum = 0;
+                        for(var k = 0; k < m_avrg_steps; k++){
+                            sum += data[0][i-k].value;
+                        }
+                        data[0][i].value = sum/m_avrg_steps;
+                    }      */              
+
+                    i++;
+                  }
+                }
+              }   
+
+
+
+            MG.data_graphic({
+              title: "",
+              //description: "Here is an example that shows percentages.",
+              data: data,
+              markers: [
+                  {
+                      time: 20,
+                      label: "apt-get's"
+                   },
+                  {
+                      time: 80,
+                      label: "fairsoft start"
+                   }, {
+                      time: 156,
+                      label: "download boost"
+                   },{
+                      time: 270,
+                      label: "boost compiled"
+                   },{
+                      time: 428,
+                      label: "Geant4 Start download"
+                   },{
+                      time: 1870,
+                      label: "Geant4 Compiled, Root start"
+                   },{
+                      time: 2230,
+                      label: "Pluto start"
+                   },{
+                      time: 2410,
+                      label: "Geant 3 start"
+                   },{
+                      time: 2520,
+                      label: "vgm"
+                   },{
+                      time: 2620,
+                      label: "MPD start"
+                   },{
+                      time: 2730,
+                      label: "MPD test"
+                   },
+              ],
+                
+              animate_on_load: false,
+              width: 1500,
+              height: 230,
+              left: 120,
+              area: true,
+              //y_extended_ticks: true,
+              x_accessor: 'time',
+              y_accessor: 'value',              
+              yax_format: percentage==true?function(v){return v+"%"}:null,
+              xax_format: function(v){return ""},
+              target: '#'+id,
+              max_x: max_time,
+              missing_is_hidden: false,
+              interpolate: 'linear',
+              interpolate_tension: 1,
+            //  max_y: 100,
+              color: '#08ba4d',
+              x_axis: false,
+                y_axis: false,
+              legend: data.length>1?['среднее']:null
+              //y_rug: true
+            });
+        }
+        
+
+      }
+
+
+  </script>
+</html>

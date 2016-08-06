@@ -1,0 +1,32 @@
+The build process for the external packages for the FairRoot Project was started at 080516_201229
+*** Compiling the external packages with the GCC compiler
+*** Building the libraries with optimization
+The following parameters are set.
+System              :  64bit
+C++ compiler        :  g++
+C compiler          :  gcc
+Fortran compiler    : 
+CXXFLAGS            :  -O2 -std=c++11
+CFLAGS              :  -O2
+FFLAGS              :  -O2
+Compiler            :  gcc
+Debug               :  no
+Optimization        :  no
+Platform            :  linux
+Architecture        :  linuxx8664gcc
+G4System            :  Linux-g++
+g4_data_files       : 
+g4_get_data         : 
+Number of parallel    
+processes for build :  4
+Installation Directory:  /opt/fairsoft/install
+Found cmake version 2.8.12.2 which is newer than the
+required version 2.8.6 in PATH
+This version is okay. Don't install cmake as external package.
+*** Compiling gtest ................ 
+*** gtest compiled successfully ***
+*** Compiling gsl ................ 
+*** gsl compiled successfully ***
+*** Compiling Boost ................ 
+The patch boost_glibc.patch is already applied.
+*** Boost compiled successfully ***
