@@ -1,0 +1,170 @@
+Ubuntu 14.04.4 LTS
+
+root@mpdci:/home/panda# lscpu
+Architecture:          x86_64
+CPU op-mode(s):        32-bit, 64-bit
+Byte Order:            Little Endian
+CPU(s):                20
+On-line CPU(s) list:   0-19
+Thread(s) per core:    1
+Core(s) per socket:    10
+Socket(s):             2
+NUMA node(s):          2
+Vendor ID:             GenuineIntel
+CPU family:            6
+Model:                 63
+Stepping:              2
+CPU MHz:               2394.462
+BogoMIPS:              4789.10
+Hypervisor vendor:     Microsoft
+Virtualization type:   full
+L1d cache:             32K
+L1i cache:             32K
+L2 cache:              256K
+L3 cache:              30720K
+NUMA node0 CPU(s):     0-9
+NUMA node1 CPU(s):     10-19
+
+root@mpdci:/home/panda# df -H
+Filesystem      Size  Used Avail Use% Mounted on
+udev             74G  8.2k   74G   1% /dev
+tmpfs            15G  418k   15G   1% /run
+/dev/sda1        31G  2.5G   28G   9% /
+none            4.1k     0  4.1k   0% /sys/fs/cgroup
+none            5.3M     0  5.3M   0% /run/lock
+none             74G     0   74G   0% /run/shm
+none            105M     0  105M   0% /run/user
+none             66k     0   66k   0% /etc/network/interfaces.dynamic.d
+/dev/sdb1       296G   66M  281G   1% /mnt
+
+
+apt-get install htop
+apt-get install dstat
+apt-get install gt5  // check folders size
+
+df // disk space usage
+
+Установка GitLab Community Edition
+ - установка необходимых зависимостей
+sudo apt-get install curl openssh-server ca-certificates postfix (выбираем все по дефолту)
+ - добавление сервера для скачивания пакета и установка пакета
+ curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | sudo bash
+
+sudo apt-get install gitlab-ce
+
+- настройка и запуск
+sudo gitlab-ctl reconfigure
+
+- открыть 80 порт
+
+
+- открыть сайт, назначить пароль администратора (имя пользователя - root)
+
+- импортировать проект из https://git.jinr.ru/nica/mpdroot.git
+
+
+
+
+
+
+Установка GitLab Runner
+https://gitlab.com/gitlab-org/gitlab-ci-multi-runner/blob/master/docs/install/linux-repository.md
+
+ - добавление репозитория
+ curl -L https://packages.gitlab.com/install/repositories/runner/gitlab-ci-multi-runner/script.deb.sh | sudo bash
+ - установка
+ sudo apt-get install gitlab-ci-multi-runner
+ - подключение к репозиторию
+ sudo gitlab-ci-multi-runner register
+ -- вводим адрес http://40.114.55.242/ci
+ -- вводим токен, полученный на странице в веб-интерфесе http://40.114.55.242/admin/runners
+ -- вводим название (description) раннера [Main Runner]
+ -- теги - ничего
+ -- executor = shell
+
+- подключаем раннер к репозиторию
+открываем страницу http://40.114.55.242/admin/runners/
+выбираем Edit
+и напротив репозитория нажимаем Enable
+галочка Run utagged jobs должна быть включена
+
+- дополнительно настраиваем параметры раннера
+файл настройки - nano /etc/gitlab-runner/config.toml
+-- в общей секции:
+concurrent = 8
+-- в секции [[runners]]
+output_limit = 10240 // (10MB) - если логи не помещаются билд зависает
+timeout = 5400 // максимально секунд на билд - долгие билды с чистого листа, если не успевает - отменяется
+
+
+- разрешаем раннеру исполнять sudo без пароля
+-- команда visudo
+добавляем строчку в файле
+#Allow sudo without password for gitlab-runner
+gitlab-runner ALL=(ALL) NOPASSWD: ALL
+
+- устанавливаем Docker
+curl -sSL https://get.docker.com/ | sh
+
+
+
+
+-----------------------
+- добавляем .gitlab-ci.yml
+-- клонируем репозиторий себе на компьютер git clone http://40.114.55.242/root/mpdroot (именно по ссылке с http, по той которая предлагается в веб-интерфейсе может быть access denied)
+
+-- копируем в репозиторий файлы .gitlab-ci.yml и Dockerfile
+
+-- пушим
+-- начинается билд
+
+
+
+Написание .gitlab-ci.yml
+-- проверить CI скрипт на ошибки синтаксиса можно с помощью в строенного в GitLab веб интерфейса http://40.114.55.242/ci/lint
+
+
+Написание Dockerfile
+
+
+
+- лучшие браузеры для просмотра реал-тайм билда: Safari
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Возможные проблемы
+- если вывод билда зависает и никогда не завершается и в логах раннера при попытке отправки логов на сервер репозитория постоянно выдвется ошибка ошибка 400 Bad Request, то возможно на сервере раннера раздел /tmp имеет слишком маленький размер (мегабайты) и файлы лога с какого-то момента перестают помещаться туда
+РЕШЕНИЕ: увеличить размер раздела /tmp
+команды:
+sudo umount /tmp
+sudo mount -t tmpfs -o size=104857600,mode=1777 overflow /tmp
+ // увечичиваем размер раздела до 100 мегабайт
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
