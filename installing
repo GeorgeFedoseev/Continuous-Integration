@@ -109,6 +109,26 @@ curl -sSL https://get.docker.com/ | sh
 
 
 
+необязательно [
+	- обновляем Ruby до версии 2.1 (рещает проблему с выводом больших логов в реалтайме в веб-интерфейс)
+	-- устаналиваем зависиомти 
+	sudo apt-get install libssl-dev
+	sudo apt-get install zlib1g-dev
+
+	-- установка Ruby с менеджером версий, таким как RVM, может повлечь проблемы при исппользовании с GitLab, поэтому ставим так:
+	sudo apt-get remove ruby1.8
+	mkdir /tmp/ruby && cd /tmp/ruby
+	curl -O --progress https://cache.ruby-lang.org/pub/ruby/2.1/ruby-2.1.8.tar.gz
+	echo 'c7e50159357afd87b13dc5eaf4ac486a70011149  ruby-2.1.8.tar.gz' | shasum -c - && tar xzf ruby-2.1.8.tar.gz
+	cd ruby-2.1.8
+	./configure --disable-install-rdoc
+	make
+	sudo make install
+
+	-- устаналиваем Bundler Gem
+	sudo gem install bundler --no-ri --no-rdoc
+]
+
 -----------------------
 - добавляем .gitlab-ci.yml
 -- клонируем репозиторий себе на компьютер git clone http://40.114.55.242/root/mpdroot (именно по ссылке с http, по той которая предлагается в веб-интерфейсе может быть access denied)
@@ -128,17 +148,6 @@ curl -sSL https://get.docker.com/ | sh
 
 
 
-- лучшие браузеры для просмотра реал-тайм билда: Safari
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -153,8 +162,11 @@ sudo mount -t tmpfs -o size=104857600,mode=1777 overflow /tmp
 
 
 
+- у не вошедшего в аккаунт репозитория пользователя могут возникнуть проблемы с выводом реал-тайм лога: логи больше некоторого размера могут перестать посылаться (не будет обновляться реал-тайм лог)
+РЕШЕНИЕ:
+нужно войти в аккаунт в веб-интерфейсе
 
-
+- реккомендуемые браузеры для просмотра реал-тайм билда: Firefox, Safari (в Google Chrome отзывчивость веб-страницы снижается при выводе большого количества логов)
 
 
 
