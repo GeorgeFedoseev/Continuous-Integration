@@ -10,6 +10,8 @@ $(function(){
       ex.path = data_path+ex.path;
     }
 
+    var ready_count = 0;
+
     // create sys profiles
     var system_profiles = [];
     for(var k in data){
@@ -18,12 +20,25 @@ $(function(){
         new SystemProfile({
           name: ex.name,
           csv_file: ex.path,
-          container: $("#profiles_container")
+          container: $("#profiles_container"),
+          ready: function(){
+            ready_count++;
+            if(ready_count == system_profiles.length){
+              console.log("All ready");
+              // render all
+              for(var k in system_profiles){
+                var profile = system_profiles[k];
+                profile.render();
+              }
+            }
+          }
         })
       );
     }
 
-    
+
+
+
   });
 
 });

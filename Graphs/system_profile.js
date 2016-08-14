@@ -15,6 +15,10 @@ class SystemProfile {
         start: 0,
         step: 6,
         count: 20
+      },
+
+      ready: function(){
+        console.log("Profile ready");
       }
     };
 
@@ -28,12 +32,81 @@ class SystemProfile {
   }
 
   _init(){
+    var _this = this;
     console.log("SystemProfile initialization");
-    this._parse_data(this.options.csv_file, function(data){
-
+    this._parse_data(this.options.csv_file, function(){
+      // all set and ready to render
+      console.log("Ready to render");
+      _this.options.ready();
     });
   }
 
+  render(){
+    var _this = this;
+    if(this.time == undefined){
+      console.error("cant render without time axis defined");
+      return;
+    }
+
+    var container = this.options.container;
+
+    var profile = $("<div>")
+    profile.addClass("profile");
+
+
+    // clear container
+    profile.html("");
+
+    // add title
+    var title = $("<h2>");
+    title.html(this.options.name);
+    profile.append(title);
+
+    var graphs_container = $("<div>");
+    graphs_container.addClass("system_profile");
+
+    // render graphs
+    var common_options = {
+      container: graphs_container,
+      width: 500,
+      from_date: this.time[0]*1000,
+      to_date: this.time[this.time.length-1]*1000
+    };
+
+    //console.log(this.total_cpu);
+
+  //  console.log(new Date(this.time[0]*1000));
+
+    this.total_cpu_graph = new Graph($.extend({}, common_options, {
+      name: "total CPU",
+      min_value: 0,
+      max_value: 100,
+      data_function: function(start, stop, step, callback){
+        var time_array = _this.time;
+        var data_array = _this.total_cpu;
+        start = +start; stop = +stop;
+
+        var current_data_index = 0;
+        var values = [];
+
+        while(start < stop){
+          while(start > time_array[current_data_index]*1000){
+            current_data_index++;
+          }
+          var current_time = time_array[current_data_index];
+          var current_val = data_array[current_data_index];
+          values.push(current_val);
+        //  console.log(current_time);
+          start += step;
+        }
+        callback(null, values);
+      }
+    }));
+    profile.append(graphs_container);
+    container.append(profile);
+
+    this.total_cpu_graph.render();
+  }
 
   _parse_data(csv_filepath, callback){
     var _this = this;
@@ -56,6 +129,10 @@ class SystemProfile {
           for(var row_i in rows){
             row_i = parseInt(row_i);
             var row = rows[row_i];
+            if(row[_this.options.time_column_index] == undefined){
+                continue;
+            }
+
             if(row_i >= _this.options.first_data_row_index){
               _this.time.push(row[_this.options.time_column_index]);
               _this.total_cpu.push(row[_this.options.total_cpu_column_index]);
@@ -78,7 +155,7 @@ class SystemProfile {
             }
           }
 
-          console.log(_this.cpus);
+          callback();
 
         }
       });
