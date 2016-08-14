@@ -1,0 +1,3 @@
+[submodule "Graphs/cubismjs_wrapper"]
+	path = Graphs/cubismjs_wrapper
+	url = https://github.com/TrueGuy/cubismjs_wrapper

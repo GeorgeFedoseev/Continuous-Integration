@@ -1,0 +1,102 @@
+[
+  {
+    "path": "/1job/1job_1cores.csv"
+  }, {
+    "path": "/1job/1job_2cores.csv"
+  }, {
+    "path": "/1job/1job_4cores.csv"
+  }, {
+    "path": "/1job/1job_8cores_from_scratch.csv"
+  }, {
+    "path": "/1job/1job_8cores.csv"
+  }, {
+    "path": "/1job/1job_12cores.csv"
+  }, {
+    "path": "/1job/1job_16cores.csv"
+  }, {
+    "path": "/1job/1job_20cores_from_scratch.csv"
+  }, {
+    "path": "/1job/1job_20cores.csv"
+  },
+
+
+  {
+    "path": "/2jobs/2jobs_1cores.csv"
+  }, {
+    "path": "/2jobs/2jobs_2cores.csv"
+  }, {
+    "path": "/2jobs/2jobs_4cores.csv"
+  }, {
+    "path": "/2jobs/2jobs_8cores.csv"
+  }, {
+    "path": "/2jobs/2jobs_12cores.csv"
+  }, {
+    "path": "/2jobs/2jobs_16cores.csv"
+  }, {
+    "path": "/2jobs/2jobs_20cores_sh5.csv"
+  }, {
+    "path": "/2jobs/2jobs_20cores_sh10.csv"
+  }, {
+    "path": "/2jobs/2jobs_20cores_sh20.csv"
+  }, {
+    "path": "/2jobs/2jobs_20cores.csv"
+  }, {
+    "path": "/2jobs/2jobs_21cores.csv"
+  }, {
+    "path": "/2jobs/2jobs_22cores.csv"
+  },
+
+
+  {
+    "path": "/4jobs/4jobs_1cores.csv"
+  }, {
+    "path": "/4jobs/4jobs_2cores.csv"
+  }, {
+    "path": "/4jobs/4jobs_4cores.csv"
+  }, {
+    "path": "/4jobs/4jobs_8cores.csv"
+  }, {
+    "path": "/4jobs/4jobs_12cores.csv"
+  }, {
+    "path": "/4jobs/4jobs_16cores.csv"
+  }, {
+    "path": "/4jobs/4jobs_20cores_sh5.csv"
+  }, {
+    "path": "/4jobs/4jobs_20cores_sh10.csv"
+  }, {
+    "path": "/4jobs/4jobs_20cores_sh20.csv"
+  }, {
+    "path": "/4jobs/4jobs_20cores.csv"
+  }, {
+    "path": "/4jobs/4jobs_21cores.csv"
+  }, {
+    "path": "/4jobs/4jobs_22cores.csv"
+  },
+
+
+  {
+    "path": "/8jobs/8jobs_1cores.csv"
+  }, {
+    "path": "/8jobs/8jobs_2cores.csv"
+  }, {
+    "path": "/8jobs/8jobs_4cores.csv"
+  }, {
+    "path": "/8jobs/8jobs_8cores.csv"
+  }, {
+    "path": "/8jobs/8jobs_12cores.csv"
+  }, {
+    "path": "/8jobs/8jobs_16cores.csv"
+  }, {
+    "path": "/8jobs/8jobs_20cores_sh5.csv"
+  }, {
+    "path": "/8jobs/8jobs_20cores_sh10.csv"
+  }, {
+    "path": "/8jobs/8jobs_20cores_sh20.csv"
+  }, {
+    "path": "/8jobs/8jobs_20cores.csv"
+  }, {
+    "path": "/8jobs/8jobs_21cores.csv"
+  }, {
+    "path": "/8jobs/8jobs_22cores.csv"
+  }
+]
