@@ -70,7 +70,9 @@ class SystemProfile {
       container: graphs_container,
       width: 500,
       from_date: this.time[0]*1000,
-      to_date: this.time[this.time.length-1]*1000
+      to_date: this.time[this.time.length-1]*1000,
+      show_ruler: false,
+      mode: "mirror"
     };
 
     //console.log(this.total_cpu);
@@ -78,34 +80,94 @@ class SystemProfile {
   //  console.log(new Date(this.time[0]*1000));
 
     this.total_cpu_graph = new Graph($.extend({}, common_options, {
-      name: "total CPU",
+      name: "CPU",
       min_value: 0,
       max_value: 100,
-      data_function: function(start, stop, step, callback){
-        var time_array = _this.time;
-        var data_array = _this.total_cpu;
-        start = +start; stop = +stop;
-
-        var current_data_index = 0;
-        var values = [];
-
-        while(start < stop){
-          while(start > time_array[current_data_index]*1000){
-            current_data_index++;
-          }
-          var current_time = time_array[current_data_index];
-          var current_val = data_array[current_data_index];
-          values.push(current_val);
-        //  console.log(current_time);
-          start += step;
-        }
-        callback(null, values);
-      }
+      data_function: _this._get_data_function(_this.time, _this.total_cpu),
+      positive_color: "#74ff52"
     }));
+
+
+    this.mem_graph = new Graph($.extend({}, common_options, {
+      name: "MEM",
+      min_value: this._get_array_min_value(this.mem),
+      max_value: this._get_array_max_value(this.mem), // 1.369e11
+      data_function: _this._get_data_function(_this.time, _this.mem),
+      positive_color: "#ff9052"
+    }));
+
+    this.net_graph = new Graph($.extend({}, common_options, {
+      name: "NET",
+      min_value: this._get_array_min_value(this.net),
+      max_value: this._get_array_max_value(this.net),
+      data_function: _this._get_data_function(_this.time, _this.net),
+      positive_color: "#52d0ff"
+    }));
+
+    this.disk_graph = new Graph($.extend({}, common_options, {
+      name: "DISK",
+      min_value: this._get_array_min_value(this.disk),
+      max_value: this._get_array_max_value(this.disk),
+      data_function: _this._get_data_function(_this.time, _this.disk),
+      positive_color: "#ff52a0"
+    }));
+
+    //console.log(this._get_array_max_value(this.net));
+
     profile.append(graphs_container);
     container.append(profile);
 
     this.total_cpu_graph.render();
+    this.mem_graph.render();
+    this.net_graph.render();
+    this.disk_graph.render();
+  }
+
+  _get_array_max_value(array){
+    var max = array[0];
+    for(var k in array){
+      if(array[k] > max && array[k] < 1e12) // fix for enormous peaks at NET graphics
+        max = array[k];
+    }
+    return max;
+  }
+
+  _get_array_min_value(array){
+    //return 0;
+    var min = array[0];
+    for(var k in array){
+      if(array[k] < min)
+        min = array[k];
+    }
+    return min;
+  }
+
+  _get_data_function (time_array, data_array){
+    return function(start, stop, step, callback){
+      start = +start; stop = +stop;
+
+
+      var current_data_index = 0;
+      var values = [];
+      var prev_valid_value = 0;
+
+      while(start < stop){
+        while(start > time_array[current_data_index]*1000){
+          current_data_index++;
+        }
+        var current_time = time_array[current_data_index];
+        var current_val = data_array[current_data_index];
+        if(current_val > 1e12){
+          current_val = prev_valid_value;
+        }else{
+          prev_valid_value = current_val;
+        }
+        values.push(current_val);
+      //  console.log(current_time);
+        start += step;
+      }
+      callback(null, values);
+    }
   }
 
   _parse_data(csv_filepath, callback){
@@ -137,7 +199,8 @@ class SystemProfile {
               _this.time.push(row[_this.options.time_column_index]);
               _this.total_cpu.push(row[_this.options.total_cpu_column_index]);
               _this.mem.push(row[_this.options.mem_column_index]);
-              _this.disk.push(row[_this.options.disk_column_index]);
+              _this.disk.push(row[_this.options.disk_column_index]
+                              + row[_this.options.disk_column_index+1]);
               _this.net.push(row[_this.options.net_column_index]);
 
               var cpu_i = 0;
