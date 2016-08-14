@@ -3,7 +3,19 @@
 class SystemProfile {
   constructor (options) {
     var default_options = {
+      first_data_row_index: 7,
 
+      time_column_index: 134,
+      total_cpu_column_index: 120,
+      mem_column_index: 126,
+      disk_column_index: 130,
+      net_column_index: 132,
+
+      cpus_columns: {
+        start: 0,
+        step: 6,
+        count: 20
+      }
     };
 
     this.options = $.extend({}, default_options, options);
@@ -18,17 +30,56 @@ class SystemProfile {
   _init(){
     console.log("SystemProfile initialization");
     this._parse_data(this.options.csv_file, function(data){
-      
+
     });
   }
 
 
   _parse_data(csv_filepath, callback){
+    var _this = this;
+
     $.get(csv_filepath, function(data){
       Papa.parse(data, {
         dynamicTyping: true,
         complete: function(res){
-          console.log(res);
+          //console.log(res);
+
+          var rows = res.data;
+
+          _this.time = [];
+          _this.total_cpu = [];
+          _this.cpus = [];
+          _this.mem = [];
+          _this.disk = [];
+          _this.net = [];
+
+          for(var row_i in rows){
+            row_i = parseInt(row_i);
+            var row = rows[row_i];
+            if(row_i >= _this.options.first_data_row_index){
+              _this.time.push(row[_this.options.time_column_index]);
+              _this.total_cpu.push(row[_this.options.total_cpu_column_index]);
+              _this.mem.push(row[_this.options.mem_column_index]);
+              _this.disk.push(row[_this.options.disk_column_index]);
+              _this.net.push(row[_this.options.net_column_index]);
+
+              var cpu_i = 0;
+              for(var i = _this.options.cpus_columns.start;
+                 cpu_i < _this.options.cpus_columns.count;
+                 i += _this.options.cpus_columns.step)
+              {
+                if(_this.cpus[cpu_i] == undefined){
+                  _this.cpus[cpu_i] = [];
+                }
+
+                _this.cpus[cpu_i].push(row[i]);
+                cpu_i++;
+              }
+            }
+          }
+
+          console.log(_this.cpus);
+
         }
       });
     });
