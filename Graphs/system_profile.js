@@ -67,33 +67,100 @@ class SystemProfile {
 
     // render graphs
     var common_options = {
+      id_postfix: this.options.name,
       container: graphs_container,
-      width: 500,
+    //  width: 500,
+      full_width: true,
       from_date: this.time[0]*1000,
       to_date: this.time[this.time.length-1]*1000,
       show_ruler: false,
-      mode: "mirror"
+      //mode: "mirror"
     };
 
     //console.log(this.total_cpu);
 
   //  console.log(new Date(this.time[0]*1000));
 
+  var color_schemes = [
+    {
+      cpu: "#CD5334",
+      net: "#30BCED",
+      mem: "#574D68",
+      disk: "#EDAE49"
+    }, { // red blue gray purple
+      cpu: "#CD5334",
+      net: "#30BCED",
+      mem: "#222222",
+      disk: "#67597A"
+    }, { // orange
+      cpu: "#813405",
+      net: "#D45113",
+      mem: "#F9A03F",
+      disk: "#F8DDA4"
+    }, { // green
+      cpu: "#16DB65",
+      net: "#058C42",
+      mem: "#04471C",
+      disk: "#0D2818"
+    }, { // good
+      cpu: "#D66853",
+      net: "#7D4E57",
+      mem: "#364156",
+      disk: "#212D40"
+    }, {
+      cpu: "#F55D3E",
+      net: "#76BED0",
+      mem: "#F7CB15",
+      disk: "#878E88"
+    }, { // good
+      cpu: "#EA3546",
+      net: "#33658A",
+      mem: "#2F4858",
+      disk: "#F6AE2D"
+    }, {
+      cpu: "#662E9B",
+      net: "#43BCCD",
+      mem: "#EA3546",
+      disk: "#F86624"
+    }, {
+      cpu: "#1C110A",
+      net: "#43AA8B",
+      mem: "#E9B44C",
+      disk: "#9B2915"
+    }, {
+      cpu: "#EF3E36",
+      net: "#2E282A",
+      mem: "#43AA8B",
+      disk: "#EDB88B"
+    }, {
+      cpu: "#061826",
+      net: "#0471A6",
+      mem: "#43AA8B",
+      disk: "#89AAE6"
+    }, {
+      cpu: "#43AA8B",
+      net: "#254441",
+      mem: "#FF6F59",
+      disk: "#EF3054"
+    }, {
+      cpu: "#FAFF00",
+      net: "#02A9EA",
+      mem: "#FF01FB",
+      disk: "#000300"
+    }, {
+      cpu: "#2C2A4A",
+      net: "#7FDEFF",
+      mem: "#4F518C",
+      disk: "#907AD6"
+    }
+  ];
+
     this.total_cpu_graph = new Graph($.extend({}, common_options, {
       name: "CPU",
       min_value: 0,
       max_value: 100,
       data_function: _this._get_data_function(_this.time, _this.total_cpu),
-      positive_color: "#74ff52"
-    }));
-
-
-    this.mem_graph = new Graph($.extend({}, common_options, {
-      name: "MEM",
-      min_value: this._get_array_min_value(this.mem),
-      max_value: this._get_array_max_value(this.mem), // 1.369e11
-      data_function: _this._get_data_function(_this.time, _this.mem),
-      positive_color: "#ff9052"
+      positive_color: color_schemes[0].cpu
     }));
 
     this.net_graph = new Graph($.extend({}, common_options, {
@@ -101,15 +168,25 @@ class SystemProfile {
       min_value: this._get_array_min_value(this.net),
       max_value: this._get_array_max_value(this.net),
       data_function: _this._get_data_function(_this.time, _this.net),
-      positive_color: "#52d0ff"
+      positive_color: color_schemes[0].net
     }));
+
+    this.mem_graph = new Graph($.extend({}, common_options, {
+      name: "MEM",
+      min_value: this._get_array_min_value(this.mem),
+      max_value: /*this._get_array_max_value(this.mem), // */1.369e11*0.2,
+      data_function: _this._get_data_function(_this.time, _this.mem),
+      positive_color: color_schemes[0].mem
+    }));
+
+
 
     this.disk_graph = new Graph($.extend({}, common_options, {
       name: "DISK",
       min_value: this._get_array_min_value(this.disk),
       max_value: this._get_array_max_value(this.disk),
       data_function: _this._get_data_function(_this.time, _this.disk),
-      positive_color: "#ff52a0"
+      positive_color: color_schemes[0].disk
     }));
 
     //console.log(this._get_array_max_value(this.net));
@@ -118,8 +195,8 @@ class SystemProfile {
     container.append(profile);
 
     this.total_cpu_graph.render();
-    this.mem_graph.render();
     this.net_graph.render();
+    this.mem_graph.render();
     this.disk_graph.render();
   }
 
@@ -201,7 +278,8 @@ class SystemProfile {
               _this.mem.push(row[_this.options.mem_column_index]);
               _this.disk.push(row[_this.options.disk_column_index]
                               + row[_this.options.disk_column_index+1]);
-              _this.net.push(row[_this.options.net_column_index]);
+              _this.net.push(row[_this.options.net_column_index]
+                              + row[_this.options.net_column_index+1]);
 
               var cpu_i = 0;
               for(var i = _this.options.cpus_columns.start;
