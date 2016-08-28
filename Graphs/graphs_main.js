@@ -2,7 +2,7 @@ $(function(){
 
   var data_path = "experimental_data/20cores_azure";
 
-  $.get("./experiments_config.json", function(data){
+  $.get("./experiments_config1.json", function(data){
     // edit paths and names
     for(var k in data){
       var ex = data[k];

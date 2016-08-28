@@ -1,5 +1,25 @@
 'use strict';
 
+
+var events = {
+  30: "(1)", // Ubuntu and apt-get installations
+  156: "(2)", // start Boost
+  335: "(3)", // Pythia, HepMC and XercesC compilation
+  428: "(4)", // start Geant4
+  1700: "(5)", // downloading Geant4 Data
+  1870: "(6)", // end Geant4, start Root
+  2230: "(7)", // start Pluto
+  2410: "(8)", // start Geant 3
+  2620: "(9)" // start mpdroot
+
+};
+
+var ticks = Object.keys(events);
+var labels = [];
+for(var k in events){
+  labels.push(events[k])
+}
+
 class SystemProfile {
   constructor (options) {
     var default_options = {
@@ -59,7 +79,12 @@ class SystemProfile {
 
     // add title
     var title = $("<h2>");
-    title.html(this.options.name);
+    var start_time = _this.time[0];
+    var end_time = _this.time[_this.time.length-1];
+    var sec = end_time-start_time;
+    var minutes = Math.floor(sec/60);
+    var seconds = Math.floor(sec - minutes*60);
+    title.html(this.options.name+" ("+minutes+":"+pad(seconds, 2)+") - "+Math.floor(sec)+"s");
     profile.append(title);
 
     var graphs_container = $("<div>");
@@ -69,12 +94,11 @@ class SystemProfile {
     var common_options = {
       id_postfix: this.options.name,
       container: graphs_container,
-    //  width: 500,
-      full_width: true,
+      width: 500,
       from_date: this.time[0]*1000,
       to_date: this.time[this.time.length-1]*1000,
       show_ruler: false,
-      //mode: "mirror"
+      mode: "mirror"
     };
 
     //console.log(this.total_cpu);
@@ -160,23 +184,67 @@ class SystemProfile {
       min_value: 0,
       max_value: 100,
       data_function: _this._get_data_function(_this.time, _this.total_cpu),
-      positive_color: color_schemes[0].cpu
+      positive_color: color_schemes[0].cpu,
+      show_ruler: true,
+      padding_top: 50,
+      ticks_format_y: function(d){
+        return d+"%";
+      },
+      x_ticks_values: ticks_values(),
+      ticks_format_x: label
     }));
+
+    function label(d){
+      var start_time = _this.time[0];
+      var sec = d/1000 - start_time;
+
+      return label_for_tick(sec);
+    }
+
+
+    function label_for_tick(sec){
+      console.log(sec);
+      console.log(ticks.indexOf(sec.toString()));
+      var minutes = Math.floor(sec/60);
+      var seconds = Math.floor(sec - minutes*60);
+      var add = "";
+      var tick_num = ticks.indexOf(sec.toString())+1;
+      if(tick_num == 2 ||tick_num == 5 || tick_num == 7|| tick_num == 10){
+        add = (minutes>0?minutes:"")+":"+pad(seconds, 2)+" ";
+      }
+      return add+labels[ticks.indexOf(sec.toString())];
+    }
+
+    function ticks_values(){
+      var start_time = _this.time[0];
+      var new_ticks = []
+      for(var k in ticks){
+        new_ticks[k] = (parseInt(ticks[k])+start_time)*1000;
+      }
+      console.log(new_ticks);
+      return new_ticks;
+    }
 
     this.net_graph = new Graph($.extend({}, common_options, {
       name: "NET",
       min_value: this._get_array_min_value(this.net),
       max_value: this._get_array_max_value(this.net),
       data_function: _this._get_data_function(_this.time, _this.net),
-      positive_color: color_schemes[0].net
+      positive_color: color_schemes[0].net,
+      ticks_format_y: function(d){
+        return (Math.round( d/1000000*10 ) / 10)+" MB/s";
+      }
     }));
 
     this.mem_graph = new Graph($.extend({}, common_options, {
       name: "MEM",
       min_value: this._get_array_min_value(this.mem),
-      max_value: /*this._get_array_max_value(this.mem), // */1.369e11*0.2,
+      max_value: this._get_array_max_value(this.mem), // */1.369e11*0.2,
       data_function: _this._get_data_function(_this.time, _this.mem),
-      positive_color: color_schemes[0].mem
+      positive_color: color_schemes[0].mem,
+      ticks_format_y: function(d){
+        return (Math.round( d/1e9 * 10 ) / 10)+"GB";
+      }
     }));
 
 
@@ -186,7 +254,10 @@ class SystemProfile {
       min_value: this._get_array_min_value(this.disk),
       max_value: this._get_array_max_value(this.disk),
       data_function: _this._get_data_function(_this.time, _this.disk),
-      positive_color: color_schemes[0].disk
+      positive_color: color_schemes[0].disk,
+      ticks_format_y: function(d){
+        return (Math.round( d/1000000*10 ) / 10)+" MB/s";
+      }
     }));
 
     //console.log(this._get_array_max_value(this.net));
