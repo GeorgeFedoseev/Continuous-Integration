@@ -209,7 +209,7 @@ class SystemProfile {
       var seconds = Math.floor(sec - minutes*60);
       var add = "";
       var tick_num = ticks.indexOf(sec.toString())+1;
-      if(tick_num == 2 ||tick_num == 5 || tick_num == 7|| tick_num == 10){
+      if(tick_num == 2 ||tick_num == 4 || tick_num == 6|| tick_num == 9){
         add = (minutes>0?minutes:"")+":"+pad(seconds, 2)+" ";
       }
       return add+labels[ticks.indexOf(sec.toString())];

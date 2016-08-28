@@ -289,7 +289,7 @@ clean_allocated_container:
     - sudo docker rm `sudo docker ps -a | grep Exited | awk '{print $1 }'` || true;
     - sudo docker rm `sudo docker ps -a | grep Dead | awk '{print $1 }'` || true;
 ```# Эксперименты
-![](./Graphs/img/profile1.png)
+![](./Graphs/img/profile2.png)
 ![](./Graphs/img/pie_chart.png)
 ![](./Graphs/img/3d_plot1.png)
 ### Вывод# Заключение# Список литературы1.	Fowler M., Foemmel M. Continuous integration) <http://martinfowler.com/articles/continuousIntegration.html>2.	Многоцелевой Детектор - MPD (концептуальный дизайн-проект) <http://nica.jinr.ru/files/CDR_MPD/MPD_CDR_ru.pdf>3.	Непрерывная интеграция, http://lib.custis.ru/Непрерывная_интеграция4.	Fink J. Docker: A software as a service, operating system-level virtualization framework //Code4Lib Journal. – 2014. – Т. 25.
